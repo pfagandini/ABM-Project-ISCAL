@@ -10,4 +10,10 @@ class agent(mesa.Agent):
 
     def step(self):
 
-        print(f"Hi, I am an agent, you can call me {str(self.unique_id)}.")
+        if self.wealth > 0:
+            other_agent = self.random.choice(self.model.schedule.agents)
+            if other_agent is not None:
+                other_agent.wealth = other_agent.wealth + 1
+                self.wealth = self.wealth - 1
+
+        #print(f"Hi, I am an agent, you can call me {str(self.unique_id)}. My wealth is {self.wealth}.")
