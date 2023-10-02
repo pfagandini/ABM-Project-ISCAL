@@ -21,6 +21,8 @@ class model(mesa.Model):
         for a in self.schedule.agents:
             a.gen_skills = np.round(a.gen_skills/max_g_skills * (a.qualities-1)+1)
 
+        #print('agentes creados')
+
     def step(self):
 
         self.schedule.step()

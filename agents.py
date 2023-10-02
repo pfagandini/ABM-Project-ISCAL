@@ -1,5 +1,6 @@
 import mesa
 import numpy as np
+import random
 from scipy.stats import pareto, truncnorm
 
 class agent(mesa.Agent):
@@ -19,12 +20,15 @@ class agent(mesa.Agent):
         varieties = 10 # J in the paper
 
         self.wealth = pareto.rvs(inequality_wealth)
+
         self.past_wealth = 0
 
         self.gen_skills = (self.wealth*(1-weight_gen_skills) + pareto.rvs(inequality_skills)*weight_gen_skills)
+
         self.sp_skills = np.round(np.random.default_rng().uniform(0.5 , varieties + 0.5),0)
 
         self.pref_low = np.round(np.random.default_rng().uniform(0.5 , varieties + 0.5),0)
+
         self.pref_high = np.round(np.random.default_rng().uniform(0.5 + self.pref_low , varieties + 0.5),0)
 
         self.min_connectivity = 1 # This is the N^0 of the paper
@@ -107,9 +111,9 @@ class agent(mesa.Agent):
 
     def update_wealth(self):
         
-        to_return = self.revenue + self.wealth * (1 + self.interest_rate) - self.consumed
+        new_wealth = self.revenue + self.wealth * (1 + self.interest_rate) - self.consumed
         self.past_wealth = self.wealth
-        self.wealth = to_return
+        self.wealth = new_wealth
         self.consumed = 0
         self.update_consumption()
 
@@ -119,17 +123,17 @@ class agent(mesa.Agent):
         self.update_wealth()
 
         agents_to_interact = []
+        aux_agents = []
+
+        for ag in self.model.schedule.agents:
+            if ag != self:
+                aux_agents.append(ag)
+
         i = 0
-
-        print(f'Hi! I am agent {self.unique_id}')
-
-        while i < self.connectivity:
-            aux_agent = self.random.choice(self.model.schedule.agents)
-            if (aux_agent == self) or (aux_agent in agents_to_interact):
-                i = i
-            else:
-                agents_to_interact.append(aux_agent)
-                i = i + 1
+        
+        my_agents_list=aux_agents.copy()
+        random.shuffle(my_agents_list)
+        agents_to_interact = my_agents_list[0:max(int(self.connectivity), len(my_agents_list))]
         
         agents_to_interact.sort(key = lambda x: x.connectivity, reverse = True)
 
@@ -137,3 +141,5 @@ class agent(mesa.Agent):
             if (self.max_consumption - self.consumed > a.price) and (a.sp_skills > self.pref_low) and (a.sp_skills < self.pref_high):
                 self.consumed = self.consumed - a.price
                 a.wealth = a.wealth + a.price
+            else:
+                return
