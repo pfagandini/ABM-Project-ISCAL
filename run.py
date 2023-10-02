@@ -6,7 +6,7 @@ all_wealth = []
 
 for j in range(100):
 
-    mymodel = model(10)
+    mymodel = model(200)
 
     for i in range(10):
         mymodel.step()
