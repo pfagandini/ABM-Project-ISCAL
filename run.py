@@ -1,8 +1,19 @@
 from model import model
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-starter_model = model(10)
+all_wealth = []
 
-for i in range(10):
-    starter_model.step()
-    
+for j in range(100):
+
+    mymodel = model(10)
+
+    for i in range(10):
+        mymodel.step()
+
+    for agent in mymodel.schedule.agents:
+        all_wealth.append(agent.wealth)
+
+g = sns.histplot(all_wealth, discrete = True)
+g.set(title = "Wealth distribution", xlabel = "Wealth", ylabel = "Number of agents")
+g.get_figure().savefig('Plots/wealth_distribution.png')
