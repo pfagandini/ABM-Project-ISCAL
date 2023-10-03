@@ -6,6 +6,10 @@ class model(mesa.Model):
 
     def __init__(self, N):
 
+        self.tax = 0
+        self.av_pol_view = 0
+        self.av_wealth = 0
+
         self.num_agents = N
         self.schedule = mesa.time.RandomActivation(self)
 
@@ -37,13 +41,13 @@ class model(mesa.Model):
             pol_views.append(a.political_view)
             wealth.append(a.wealth)
 
-        av_pol_view = np.mean(pol_views)
-        av_wealth = np.mean(wealth)
+        self.av_pol_view = np.mean(pol_views)
+        self.av_wealth = np.mean(wealth)
 
         # Compute tax
         u = 0.5
-        tax = 0.5*(1-(np.arctan(u/2*av_pol_view))/(np.arctan(u/2)))
+        self.tax = 0.5*(1-(np.arctan(u/2*self.av_pol_view))/(np.arctan(u/2)))
 
         # Redistribute
         for a in self.schedule.agents:
-            a.wealth = a.wealth + tax * (av_wealth - a.wealth)
+            a.wealth = a.wealth + self.tax * (self.av_wealth - a.wealth)

@@ -55,8 +55,8 @@ class agent(mesa.Agent):
         self.max_consumption = self.wealth * self.propensity_to_consume()
 
     def update_connectivity(self):
-        w = 0.5
-        b = 0.5
+        w = 0.5 # w in the paper
+        b = 0.5 # b in the paper
         self.connectivity = self.connectivity + np.round((w * (self.wealth - self.past_wealth) + b * self.moral_behavior ) * self.connectivity)
 
         if self.connectivity > self.model.num_agents:
