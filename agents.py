@@ -67,9 +67,8 @@ class agent(mesa.Agent):
 
     def update_animal_spirits(self, friends):
 
-        ga = 0.5 # gamma constant in the paper
-
         def gamma(x):
+            ga = 0.5 # gamma constant in the paper
             if x < 0:
                 return -ga * (1+x)
             elif x == 0 :
@@ -99,10 +98,11 @@ class agent(mesa.Agent):
 
     def update_moral_behavior(self, friends):
 
-        z = 0.5
-        zet = 0.5
+        z = 0.5 # constant z in the paper
         
         def zeta(x):
+            zet = 0.5 # constant greez zeta in the paper
+
             if x < 0 :
                 return -zet * (1+x)
             elif x == 0:
@@ -117,9 +117,30 @@ class agent(mesa.Agent):
 
         Bm = np.mean(Bm_temp)
 
-        self.moral_behavior = self.moral_behavior + z(Bm-self.moral_behavior) + zeta(self.moral_behavior)
+        self.moral_behavior = self.moral_behavior + z*(Bm-self.moral_behavior) + zeta(self.moral_behavior)
 
-    def update_political_view(self):
+    def update_political_view(self, friends):
+
+        x = 0.5 # constant x in the paper
+
+        def omega(x):
+            ome = 0.5
+            if x == 0:
+                return 0
+            if x < 0:
+                return - ome * (1+x)
+            else:
+                return ome * (1-x)
+
+        Xm_temp = []
+
+        for a in friends:
+            Xm_temp.append(a.political_view)
+
+        Xm = np.mean(Xm_temp)
+
+        self.political_view = self.political_view + x*(Xm-self.political_view) + omega(self.political_view)
+
         return 0
 
     def update_wealth(self):
@@ -150,15 +171,20 @@ class agent(mesa.Agent):
         my_agents_list = self.get_friends()
 
         self.update_animal_spirits(my_agents_list)
+        self.update_political_view(my_agents_list)
+        self.update_moral_behavior(my_agents_list)
+
+        self.update_wealth()
 
         random.shuffle(my_agents_list)
         agents_to_interact = my_agents_list[0:max(int(self.connectivity), len(my_agents_list))]
         
         agents_to_interact.sort(key = lambda x: x.connectivity, reverse = True)
+        self.max_consumption = self.propensity_to_consume() * self.wealth
 
         for a in agents_to_interact:
-            if (self.max_consumption - self.consumed > a.price) and (a.sp_skills > self.pref_low) and (a.sp_skills < self.pref_high):
-                self.consumed = self.consumed - a.price
+            if (self.max_consumption - self.consumed > a.price) and (a.sp_skills >= self.pref_low) and (a.sp_skills <= self.pref_high):
+                self.consumed = self.consumed + a.price
                 a.wealth = a.wealth + a.price
-            else:
-                return
+
+        self.wealth = self.wealth - self.consumed

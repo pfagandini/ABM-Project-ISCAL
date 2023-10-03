@@ -21,8 +21,25 @@ class model(mesa.Model):
         for a in self.schedule.agents:
             a.gen_skills = np.round(a.gen_skills/max_g_skills * (a.qualities-1)+1)
 
-        #print('agentes creados')
-
     def step(self):
 
         self.schedule.step()
+
+        # Get average wealth and political views
+        pol_views = []
+        wealth = []
+
+        for a in  self.schedule.agents:
+            pol_views.append(a.political_view)
+            wealth.append(a.wealth)
+
+        av_pol_view = np.mean(pol_views)
+        av_wealth = np.mean(wealth)
+
+        # Compute tax
+        u = 0.5
+        tax = 0.5*(1-(np.arctan(u/2*av_pol_view))/(np.arctan(u/2)))
+
+        # Redistribute
+        for a in self.schedule.agents:
+            a.wealth = a.wealth + tax * (av_wealth - a.wealth)
