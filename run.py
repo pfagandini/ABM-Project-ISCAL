@@ -2,9 +2,19 @@ from model import model
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-for j in range(100):
-    mymodel = model(100)
+samples = 100
+agents = 100
+steps = 10
 
-    for i in range(10):
+wealth = []
+politlca_view = []
+moral_behavior = []
+consumption = []
+tax = []
+
+for j in range(samples):
+    mymodel = model(agents)
+
+    for i in range(steps):
         print(f'run {j} step {i}')
         mymodel.step()

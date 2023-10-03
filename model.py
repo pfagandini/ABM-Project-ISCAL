@@ -21,6 +21,10 @@ class model(mesa.Model):
         for a in self.schedule.agents:
             a.gen_skills = np.round(a.gen_skills/max_g_skills * (a.qualities-1)+1)
 
+        self.datacollector = mesa.DataCollector(
+            agent_reporters = {'Wealth':'wealth'}
+        )
+
     def step(self):
 
         self.schedule.step()
