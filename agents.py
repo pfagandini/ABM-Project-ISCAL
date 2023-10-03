@@ -57,28 +57,30 @@ class agent(mesa.Agent):
     def update_connectivity(self):
         w = 0.5
         b = 0.5
-        self.connectivity = self.connectivity + np.round([w * (self.wealth - self.past_wealth) + b * self.moral_behavior ] * self.connectivity)
+        self.connectivity = self.connectivity + np.round((w * (self.wealth - self.past_wealth) + b * self.moral_behavior ) * self.connectivity)
 
         if self.connectivity > self.model.num_agents:
-            self.connectivity = self.model.num_agents-1
+            self.connectivity = self.model.num_agents - 1
 
         elif self.connectivity < 1:
             self.connectivity = 1   
 
     def update_animal_spirits(self):
 
+        ga = 0.5 # gamma constant in the paper
+
         def gamma(x):
             if x < 0:
-                return -gamma(1+x)
+                return -ga * (1+x)
             elif x == 0 :
                 return 0
             else:
-                return gamma(1-x)
+                return ga * (1-x)
         
-        def g(x):
-            return 0
+        gamma = 0.5
+        g = 0.5 # g constant in the paper
 
-        self.animal_spirits = self.animal_spirits + g(0) + gamma(0)
+        self.animal_spirits = self.animal_spirits + g(0) + gamma(self.animal_spirits)
 
     def propensity_to_consume(self):
         c_l = 0.1 # paper's c_l
