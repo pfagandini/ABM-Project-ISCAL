@@ -77,7 +77,6 @@ class agent(mesa.Agent):
             else:
                 return ga * (1-x)
         
-        gamma = 0.5
         g = 0.5 # g constant in the paper
 
         Am_temp = []
