@@ -97,22 +97,27 @@ class agent(mesa.Agent):
         to_return = 0.5*((c_h + c_l)+(c_h - c_l)*(np.arctan(a/2*self.animal_spirits))/(np.arctan(a/2)))
         return to_return
 
-    def update_moral_behavior(self):
+    def update_moral_behavior(self, friends):
 
-        def z(x):
-            return 0
+        z = 0.5
+        zet = 0.5
         
         def zeta(x):
             if x < 0 :
-                return -zeta(1+x)
+                return -zet * (1+x)
             elif x == 0:
                 return 0
             else:
-                return zeta(1-x)
+                return zet * (1-x)
                 
-        Bm = 0
+        Bm_temp = []
 
-        self.moral_behavior = self.moral_behavior + z(Bm-self.moral_behavior) + zeta(0)
+        for a in friends:
+            Bm_temp.append(a.moral_behavior)
+
+        Bm = np.mean(Bm_temp)
+
+        self.moral_behavior = self.moral_behavior + z(Bm-self.moral_behavior) + zeta(self.moral_behavior)
 
     def update_political_view(self):
         return 0
@@ -141,18 +146,6 @@ class agent(mesa.Agent):
         return agents_to_interact
 
     def step(self):
-
-        # The the sorted list of the agents I can interact with
-        # self.update_wealth()
-
-        # agents_to_interact = []
-        # aux_agents = []
-
-        # for ag in self.model.schedule.agents:
-        #     if ag != self:
-        #         aux_agents.append(ag)
-        
-        #my_agents_list = aux_agents.copy()
 
         my_agents_list = self.get_friends()
 
