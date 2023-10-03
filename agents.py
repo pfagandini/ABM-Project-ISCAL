@@ -65,7 +65,7 @@ class agent(mesa.Agent):
         elif self.connectivity < 1:
             self.connectivity = 1   
 
-    def update_animal_spirits(self):
+    def update_animal_spirits(self, friends):
 
         ga = 0.5 # gamma constant in the paper
 
@@ -80,7 +80,14 @@ class agent(mesa.Agent):
         gamma = 0.5
         g = 0.5 # g constant in the paper
 
-        self.animal_spirits = self.animal_spirits + g(0) + gamma(self.animal_spirits)
+        Am_temp = []
+
+        for a in friends:
+            Am_temp.append(a.animal_spirits)
+
+        Am = np.mean(Am_temp)
+
+        self.animal_spirits = self.animal_spirits + g * (Am - self.animal_spirits) + gamma(self.animal_spirits)
 
     def propensity_to_consume(self):
         c_l = 0.1 # paper's c_l
@@ -119,21 +126,39 @@ class agent(mesa.Agent):
         self.consumed = 0
         self.update_consumption()
 
-    def step(self):
-
-        # The the sorted list of the agents I can interact with
-        self.update_wealth()
-
+    def get_friends(self):
+        
         agents_to_interact = []
         aux_agents = []
 
         for ag in self.model.schedule.agents:
             if ag != self:
                 aux_agents.append(ag)
-
-        i = 0
         
-        my_agents_list=aux_agents.copy()
+        my_agents_list = aux_agents.copy()
+        random.shuffle(my_agents_list)
+        agents_to_interact = my_agents_list[0:max(int(self.connectivity), len(my_agents_list))]
+
+        return agents_to_interact
+
+    def step(self):
+
+        # The the sorted list of the agents I can interact with
+        # self.update_wealth()
+
+        # agents_to_interact = []
+        # aux_agents = []
+
+        # for ag in self.model.schedule.agents:
+        #     if ag != self:
+        #         aux_agents.append(ag)
+        
+        #my_agents_list = aux_agents.copy()
+
+        my_agents_list = self.get_friends()
+
+        self.update_animal_spirits(my_agents_list)
+
         random.shuffle(my_agents_list)
         agents_to_interact = my_agents_list[0:max(int(self.connectivity), len(my_agents_list))]
         
