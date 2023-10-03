@@ -4,7 +4,7 @@ import seaborn as sns
 import numpy as np
 
 samples = 100
-agents = 100
+agents = 500
 steps = 50
 
 wealth = []
