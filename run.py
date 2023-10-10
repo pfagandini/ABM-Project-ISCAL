@@ -1,7 +1,5 @@
 from model import model
 import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
 
 samples = 100
 agents = 500
