@@ -17,6 +17,8 @@ class model(mesa.Model):
         self.num_agents = N
         self.schedule = mesa.time.RandomActivation(self)
 
+        self.first_step = True
+
 ############ DATA COLLECTOR ##################
 
         self.datacollector = mesa.DataCollector(
@@ -39,18 +41,30 @@ class model(mesa.Model):
 ############ DATA COLLECTOR ##################
 
         gen_skills = []
+        wealth = []
 
         for i in range(self.num_agents):
             a = agent(i, self)
+
             gen_skills.append(a.gen_skills)
+            wealth.append(a.wealth)
+
             self.schedule.add(a)
 
         max_g_skills = max(gen_skills)
 
+        wealth = list(sorted(wealth))
+
         for a in self.schedule.agents:
             a.gen_skills = np.round(a.gen_skills / max_g_skills * (a.qualities - 1) + 1)
+            a.connectivity = wealth.index(a.wealth)
 
     def step(self):
+
+        ## get initial data ##
+        if self.first_step:
+            self.datacollector.collect(self)
+            self.first_step = False
 
         self.schedule.step()
 
