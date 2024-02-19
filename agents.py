@@ -8,8 +8,6 @@ class agent(mesa.Agent):
     def __init__(self, unique_id, model):
 
         super().__init__(unique_id, model)
-        
-        self.interest_rate = 0.02 # r in the paper
 
         inequality_wealth = 2 # parameter for the Pareto distribution, the higher, the higher the inequality
 
@@ -145,7 +143,7 @@ class agent(mesa.Agent):
 
     def update_wealth(self):
         
-        new_wealth = self.revenue + self.wealth * (1 + self.interest_rate) - self.consumed
+        new_wealth = self.revenue + self.wealth * (1 + self.model.interest_rate) - self.consumed
         self.past_wealth = self.wealth
         self.wealth = new_wealth
         self.consumed = 0
@@ -162,7 +160,7 @@ class agent(mesa.Agent):
         
         my_agents_list = aux_agents.copy()
         random.shuffle(my_agents_list)
-        agents_to_interact = my_agents_list[0:max(int(self.connectivity), len(my_agents_list))]
+        agents_to_interact = my_agents_list[0 : max(int(self.connectivity), len(my_agents_list))]
 
         return agents_to_interact
 

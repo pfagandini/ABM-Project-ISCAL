@@ -6,6 +6,10 @@ class model(mesa.Model):
 
     def __init__(self, N):
 
+        super().__init__(self, N)
+
+        self.interest_rate = 0.02 # r in the paper
+
         self.tax = 0
         self.av_pol_view = 0
         self.av_wealth = 0
