@@ -9,30 +9,45 @@ class agent(mesa.Agent):
 
         super().__init__(unique_id, model)
 
-        inequality_wealth = 2 # parameter for the Pareto distribution, the higher, the higher the inequality
+        ###################
+        ### Parameters ###
+        ###################
 
-        inequality_skills = 2 # parameter for the Pareto distribution, the higher, the higher the inequality
+        # Wealth distribution parameter: The higher, the higher the inequality
+        inequality_wealth = 2 
+ 
+        # Skills distribution parameter: The higher, the higher the inequality
+        inequality_skills = 2 
         weight_gen_skills = 0.5 # theta in the paper
 
+        # Qualities and varieties parameters
         self.qualities = 10 # Q in the paper
         varieties = 10 # J in the paper
 
+        # Own good pricing parameters
+        a = 1 # a in the paper
+        alpha = 1 # alpha in the paper
+
+        # Connectivity limits, parameters
+        self.min_connectivity = 2 # This is the N^0 of the paper
+        self.max_connectivity = self.model.num_agents - 1 # This is the \tilde{N} of the paper.
+
+        #################
+        ### Vars Init ###
+        #################
+ 
         self.wealth = pareto.rvs(inequality_wealth)
 
-        self.past_wealth = 0
+        self.gen_skills = (self.wealth * (1 - weight_gen_skills) + pareto.rvs(inequality_skills) * weight_gen_skills)
 
-        self.gen_skills = (self.wealth*(1-weight_gen_skills) + pareto.rvs(inequality_skills)*weight_gen_skills)
+        self.sp_skills = np.round(np.random.default_rng().uniform(0.5 , varieties + 0.5) , 0)
 
-        self.sp_skills = np.round(np.random.default_rng().uniform(0.5 , varieties + 0.5),0)
+        self.pref_low = np.round(np.random.default_rng().uniform(0.5 , varieties + 0.5) , 0)
 
-        self.pref_low = np.round(np.random.default_rng().uniform(0.5 , varieties + 0.5),0)
+        self.pref_high = np.round(np.random.default_rng().uniform(0.5 + self.pref_low , varieties + 0.5) , 0)
 
-        self.pref_high = np.round(np.random.default_rng().uniform(0.5 + self.pref_low , varieties + 0.5),0)
-
-        self.min_connectivity = 1 # This is the N^0 of the paper
-        self.max_connectivity = self.model.num_agents # This is the \tilde{N} of the paper. Note that it must be fixed to \tilde{N}-1, as I am not sure a link to myself would make sense
-
-        self.connectivity = max(min(np.round(pareto.cdf(self.wealth, inequality_wealth)*self.model.num_agents),self.max_connectivity),self.min_connectivity) # As a number, the cumulative probability (between 0 and 1, wealthier -> larger)
+        # Connectivity will be updated later, once everyone has already gotten their wealth
+        self.connectivity = -1
 
         self.animal_spirits = truncnorm.rvs(-1,1)
 
@@ -40,14 +55,16 @@ class agent(mesa.Agent):
 
         self.political_view = truncnorm.rvs(-1,1)
 
+        self.price = a * self.gen_skills ** alpha
+
+        ######################
+        ### Auxiliary Vars ###
+        ######################
+
+        self.past_wealth = 0
         self.max_consumption = 0
         self.consumed = 0
         self.revenue = 0
-
-        a = 1 # a in the paper
-        alpha = 1 # alpha in the paper
-
-        self.price = a * self.gen_skills ** alpha
 
     def update_consumption(self):
         self.max_consumption = self.wealth * self.propensity_to_consume()
@@ -163,6 +180,10 @@ class agent(mesa.Agent):
         agents_to_interact = my_agents_list[0 : max(int(self.connectivity), len(my_agents_list))]
 
         return agents_to_interact
+    
+########################################################################
+    ##### Actually the move of the agents, crucial for the order ####   
+########################################################################
 
     def step(self):
 

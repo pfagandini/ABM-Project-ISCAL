@@ -17,6 +17,8 @@ for j in range(samples):
 #   Get the data   #
 ####################
 
-results = mymodel.datacollector.get_model_vars_dataframe()
+results_model = mymodel.datacollector.get_model_vars_dataframe()
+results_model.to_csv('results_model.csv')
 
-results.to_csv('results.csv')
+results_agents = mymodel.datacollector.get_agent_vars_dataframe()
+results_agents.to_csv('results_agents.csv')
