@@ -1,12 +1,7 @@
 from model import model
 import matplotlib.pyplot as plt
-import xlsxwriter
-
-workbook = xlsxwriter.Workbook('Data.xlsx')
-worksheet_wealth = workbook.add_worksheet('wealth')
-worksheet_political = workbook.add_worksheet('political')
-worksheet_moral = workbook.add_worksheet('moral')
-worksheet_consumption = workbook.add_worksheet('consumption')
+import pandas as pd
+import numpy as np
 
 samples = 1
 agents = 10
@@ -59,35 +54,10 @@ for j in range(samples):
         wealth_list.append(wealth)
         political_view_list.append(political_view)
         moral_behavior_list.append(moral_behavior)
-        consumption_list.append(consumption)    
-        
-###############
-# Data Export #
-###############
+        consumption_list.append(consumption)
 
-def trans(M):
-    return [[M[j][i] for j in range(len(M))] for i in range(len(M[0]))]
+####################
+#   Get the data   #
+####################
 
-wealth_list = trans(wealth_list)
-
-ag = []
-for i in range(0, agents):
-    ag.append(str(f"Agent {i+1}"))
-print(ag)
-
-pe = []
-for i in range(0, steps):
-    pe.append(str(f"Period {i+1}"))
-print(pe)
-
-head = ['periods \ agents'] + ag
-
-# Write the data.
-worksheet_wealth.write_row(0 , 0 , head)
-worksheet_wealth.write_row(1 , 0 , pe)
-
-for i in range(0, len(ag)):
-    print(i)
-    worksheet_wealth.write_row(1 , i + 1 , wealth_list[i])
-
-workbook.close()
+results = mymodel.datacollector.get_model_vars_dataframe()

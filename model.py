@@ -13,6 +13,27 @@ class model(mesa.Model):
         self.num_agents = N
         self.schedule = mesa.time.RandomActivation(self)
 
+############ DATA COLLECTOR ##################
+
+        self.datacollector = mesa.DataCollector(
+            model_reporters = {
+                "n_agents": lambda m: m.schedule.get_agent_count(),
+                "tax" : "tax"
+             },
+            agent_reporters = {
+                "wealth" : "wealth",
+                "moral_behavior" : "moral_behavior",
+                "connectivity" : "connectivity",
+                "animal_spirits" : "animal_spirits",
+                "political_view" : "political_view",
+                "consumption" : "consumption",
+                "past_wealth" : "past_wealth",
+                "gen_skills" : "gen_skills"
+            }
+        )
+
+############ DATA COLLECTOR ##################
+
         gen_skills = []
 
         for i in range(self.num_agents):
@@ -23,11 +44,7 @@ class model(mesa.Model):
         max_g_skills = max(gen_skills)
 
         for a in self.schedule.agents:
-            a.gen_skills = np.round(a.gen_skills/max_g_skills * (a.qualities-1)+1)
-
-        self.datacollector = mesa.DataCollector(
-            agent_reporters = {'Wealth':'wealth'}
-        )
+            a.gen_skills = np.round(a.gen_skills / max_g_skills * (a.qualities - 1) + 1)
 
     def step(self):
 
