@@ -32,7 +32,7 @@ class model(mesa.Model):
                 "connectivity" : "connectivity",
                 "animal_spirits" : "animal_spirits",
                 "political_view" : "political_view",
-                "consumption" : "consumption",
+                "consumption" : "consumed",
                 "past_wealth" : "past_wealth",
                 "gen_skills" : "gen_skills"
             }
