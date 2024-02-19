@@ -62,23 +62,43 @@ class agent(mesa.Agent):
         ######################
 
         self.past_wealth = 0
+
         self.max_consumption = 0
         self.consumed = 0
+
         self.revenue = 0
 
-    def update_consumption(self):
-        self.max_consumption = self.wealth * self.propensity_to_consume()
+        self.my_friends = [] # list of contacts
+
+    def get_friends(self):
+        
+        aux_agents = [a for a in self.model.schedule.agents]
+        aux_agents.remove(self)
+        random.shuffle(aux_agents)
+
+        return aux_agents[0 : min(int(self.connectivity), self.max_connectivity)]
+    
+    def propensity_to_consume(self):
+        c_l = 0.1 # paper's c_l
+        c_h = 0.9 # paper's c_h
+
+        a = 0.5 # a in the paper
+
+        return 0.5*((c_h + c_l)+(c_h - c_l)*(np.arctan(a/2*self.animal_spirits))/(np.arctan(a/2)))
 
     def update_connectivity(self):
         w = 0.5 # w in the paper
         b = 0.5 # b in the paper
-        self.connectivity = self.connectivity + np.round((w * (self.wealth - self.past_wealth) + b * self.moral_behavior ) * self.connectivity)
 
+        self.connectivity = self.connectivity + np.round((w * (self.wealth - self.past_wealth) + b * self.moral_behavior ) * self.connectivity)
         if self.connectivity > self.model.num_agents:
             self.connectivity = self.max_connectivity
 
         elif self.connectivity < 1:
-            self.connectivity = self.min_connectivity   
+            self.connectivity = self.min_connectivity
+
+        if np.isnan(self.connectivity):
+            self.connectivity = self.min_connectivity
 
     def update_animal_spirits(self, friends):
 
@@ -102,15 +122,6 @@ class agent(mesa.Agent):
 
         self.animal_spirits = self.animal_spirits + g * (Am - self.animal_spirits) + gamma(self.animal_spirits)
 
-    def propensity_to_consume(self):
-        c_l = 0.1 # paper's c_l
-        c_h = 0.9 # paper's c_h
-
-        a = 0.5 # a in the paper
-
-        to_return = 0.5*((c_h + c_l)+(c_h - c_l)*(np.arctan(a/2*self.animal_spirits))/(np.arctan(a/2)))
-        return to_return
-
     def update_moral_behavior(self, friends):
 
         z = 0.5 # constant z in the paper
@@ -124,15 +135,10 @@ class agent(mesa.Agent):
                 return 0
             else:
                 return zet * (1-x)
-                
-        Bm_temp = []
 
-        for a in friends:
-            Bm_temp.append(a.moral_behavior)
+        Bm = np.mean([a.moral_behavior for a in friends])
 
-        Bm = np.mean(Bm_temp)
-
-        self.moral_behavior = self.moral_behavior + z*(Bm-self.moral_behavior) + zeta(self.moral_behavior)
+        self.moral_behavior = self.moral_behavior + z * (Bm - self.moral_behavior) + zeta(self.moral_behavior)
 
     def update_political_view(self, friends):
 
@@ -158,28 +164,10 @@ class agent(mesa.Agent):
 
         return 0
 
-    def update_wealth(self):
-        
+    def update_wealth(self):  
         new_wealth = self.revenue + self.wealth * (1 + self.model.interest_rate) - self.consumed
         self.past_wealth = self.wealth
         self.wealth = new_wealth
-        self.consumed = 0
-        self.update_consumption()
-
-    def get_friends(self):
-        
-        agents_to_interact = []
-        aux_agents = []
-
-        for ag in self.model.schedule.agents:
-            if ag != self:
-                aux_agents.append(ag)
-        
-        my_agents_list = aux_agents.copy()
-        random.shuffle(my_agents_list)
-        agents_to_interact = my_agents_list[0 : max(int(self.connectivity), len(my_agents_list))]
-
-        return agents_to_interact
     
 ########################################################################
     ##### Actually the move of the agents, crucial for the order ####   
@@ -187,23 +175,15 @@ class agent(mesa.Agent):
 
     def step(self):
 
-        my_agents_list = self.get_friends()
+        self.my_friends = self.get_friends()
 
-        self.update_animal_spirits(my_agents_list)
-        self.update_political_view(my_agents_list)
-        self.update_moral_behavior(my_agents_list)
+        self.my_friends.sort(key = lambda x: x.connectivity, reverse = True)
 
-        self.update_wealth()
-
-        random.shuffle(my_agents_list)
-        agents_to_interact = my_agents_list[0:max(int(self.connectivity), len(my_agents_list))]
-        
-        agents_to_interact.sort(key = lambda x: x.connectivity, reverse = True)
         self.max_consumption = self.propensity_to_consume() * self.wealth
+        self.consumed = 0
+        self.revenue = 0
 
-        for a in agents_to_interact:
+        for a in self.my_friends:
             if (self.max_consumption - self.consumed > a.price) and (a.sp_skills >= self.pref_low) and (a.sp_skills <= self.pref_high):
-                self.consumed = self.consumed + a.price
-                a.wealth = a.wealth + a.price
-
-        self.wealth = self.wealth - self.consumed        
+                self.consumed += a.price
+                a.revenue += a.price

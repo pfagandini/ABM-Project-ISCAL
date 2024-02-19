@@ -45,10 +45,8 @@ class model(mesa.Model):
 
         for i in range(self.num_agents):
             a = agent(i, self)
-
             gen_skills.append(a.gen_skills)
             wealth.append(a.wealth)
-
             self.schedule.add(a)
 
         max_g_skills = max(gen_skills)
@@ -57,7 +55,7 @@ class model(mesa.Model):
 
         for a in self.schedule.agents:
             a.gen_skills = np.round(a.gen_skills / max_g_skills * (a.qualities - 1) + 1)
-            a.connectivity = wealth.index(a.wealth)
+            a.connectivity = len(wealth) - wealth.index(a.wealth) + a.min_connectivity
 
     def step(self):
 
@@ -66,18 +64,27 @@ class model(mesa.Model):
             self.datacollector.collect(self)
             self.first_step = False
 
+        ########################
+        ### Now agents move! ###
+        ########################
+        
         self.schedule.step()
 
+        ########################
+        ########################
+
+        # Update wealth levels with consumption and revenue
+
+        for a in self.schedule.agents:
+            a.update_wealth()
+
+        for a in self.schedule.agents:
+            a.update_connectivity()
+
         # Get average wealth and political views
-        pol_views = []
-        wealth = []
-
-        for a in  self.schedule.agents:
-            pol_views.append(a.political_view)
-            wealth.append(a.wealth)
-
-        self.av_pol_view = np.mean(pol_views)
-        self.av_wealth = np.mean(wealth)
+        # to compute tax
+        self.av_pol_view = np.mean([a.political_view for a in self.schedule.agents])
+        self.av_wealth = np.mean([a.wealth for a in self.schedule.agents])
 
         # Compute tax
         u = 0.5
@@ -86,5 +93,10 @@ class model(mesa.Model):
         # Redistribute
         for a in self.schedule.agents:
             a.wealth = a.wealth + self.tax * (self.av_wealth - a.wealth)
+
+        for a in self.schedule.agents:
+            a.update_animal_spirits(a.my_friends)
+            a.update_moral_behavior(a.my_friends)
+            a.update_political_view(a.my_friends)
 
         self.datacollector.collect(self)
