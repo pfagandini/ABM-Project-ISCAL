@@ -10,10 +10,13 @@ steps = 5
 for j in range(samples):
     mymodel = model(agents)
 
+    for _ in range(steps):
+        mymodel.step()
+
 ####################
 #   Get the data   #
 ####################
 
 results = mymodel.datacollector.get_model_vars_dataframe()
 
-pd.to_csv('results.csv')
+results.to_csv('results.csv')

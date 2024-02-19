@@ -67,8 +67,10 @@ class model(mesa.Model):
 
         # Compute tax
         u = 0.5
-        self.tax = 0.5*(1-(np.arctan(u/2*self.av_pol_view))/(np.arctan(u/2)))
+        self.tax = 0.5 * (1 - (np.arctan(u / 2 * self.av_pol_view)) / (np.arctan(u / 2)))
 
         # Redistribute
         for a in self.schedule.agents:
             a.wealth = a.wealth + self.tax * (self.av_wealth - a.wealth)
+
+        self.datacollector.collect(self)
