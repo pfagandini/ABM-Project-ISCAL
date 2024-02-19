@@ -75,10 +75,10 @@ class agent(mesa.Agent):
         self.connectivity = self.connectivity + np.round((w * (self.wealth - self.past_wealth) + b * self.moral_behavior ) * self.connectivity)
 
         if self.connectivity > self.model.num_agents:
-            self.connectivity = self.model.num_agents - 1
+            self.connectivity = self.max_connectivity
 
         elif self.connectivity < 1:
-            self.connectivity = 1   
+            self.connectivity = self.min_connectivity   
 
     def update_animal_spirits(self, friends):
 
@@ -206,4 +206,4 @@ class agent(mesa.Agent):
                 self.consumed = self.consumed + a.price
                 a.wealth = a.wealth + a.price
 
-        self.wealth = self.wealth - self.consumed
+        self.wealth = self.wealth - self.consumed        
