@@ -4,8 +4,8 @@ import pandas as pd
 import numpy as np
 
 samples = 1
-agents = 100
-steps = 200
+agents = 50
+steps = 1000
 
 for j in range(samples):
     mymodel = model(agents)
