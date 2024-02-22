@@ -46,7 +46,7 @@ class model(mesa.Model):
         wealth = []
 
         for i in range(int(self.num_agents)):
-            a = agent(i, data, self)
+            a = agent(i, self)
             gen_skills.append(a.gen_skills)
             wealth.append(a.wealth)
             self.schedule.add(a)
