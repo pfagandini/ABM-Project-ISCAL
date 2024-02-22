@@ -5,53 +5,73 @@ from scipy.stats import pareto, truncnorm
 
 class agent(mesa.Agent):
     
-    def __init__(self, unique_id, model):
+    def __init__(self, unique_id, data, model):
 
-        super().__init__(unique_id, model)
+        super().__init__(unique_id, data, model)
 
         ###################
         ### Parameters ###
         ###################
 
         # Wealth distribution parameter: The higher, the higher the inequality
-        inequality_wealth = 2 
+        #inequality_wealth = 2 
+        inequality_wealth = data['inequality_wealth']
  
         # Skills distribution parameter: The higher, the higher the inequality
-        inequality_skills = 2 
-        weight_gen_skills = 0.5 # theta in the paper
+        # inequality_skills = 2 
+        # weight_gen_skills = 0.5 # theta in the paper
+        inequality_skills = data['inequality_skills'] 
+        weight_gen_skills = data['weight_gen_skills'] # theta in the paper
 
         # Qualities and varieties parameters
-        self.qualities = 10 # Q in the paper
-        varieties = 10 # J in the paper
+        # self.qualities = 10 # Q in the paper
+        # varieties = 10 # J in the paper
+        self.qualities = data['self.qualities'] # Q in the paper
+        varieties = data['varieties'] # J in the paper
 
         # Own good pricing parameters
-        a = 1 # a in the paper
-        alpha = 1 # alpha in the paper
+        # a = 1 # a in the paper
+        # alpha = 1 # alpha in the paper
+        a = data['a']
+        alpha = data['alpha']
 
         # Connectivity limits, parameters
-        self.min_connectivity = 2 # This is the N^0 of the paper
-        self.max_connectivity = self.model.num_agents - 1 # This is the \tilde{N} of the paper.
+        # self.min_connectivity = 2 # This is the N^0 of the paper
+        # self.max_connectivity = self.model.num_agents - 1 # This is the \tilde{N} of the paper.
+        self.min_connectivity = data['min_connectivity']
+        self.max_connectivity = data['max_connectivity']
 
         # Propensity to consume parameters
-        self.pc_a = 0.5 # a in the paper
-        self.pc_c_l = 0.1 # paper's c_l
-        self.pc_c_h = 0.9 # paper's c_h
+        # self.pc_a = 0.5 # a in the paper
+        # self.pc_c_l = 0.1 # paper's c_l
+        # self.pc_c_h = 0.9 # paper's c_h
+        self.pc_a = data['pc_a']
+        self.pc_c_l = data['pc_c_l']
+        self.pc_c_h = data['pc_c_h']
 
         # Connectivity update parameters
-        self.connect_w = 0.5 # w in the paper
-        self.connect_b = 0.5 # w in the paper
+        # self.connect_w = 0.5 # w in the paper
+        # self.connect_b = 0.5 # w in the paper
+        self.connect_w = data['connect_w']
+        self.connect_b = data['connect_b']
 
         # Animal spirits parameters
-        self.as_gamma = 0.5 # gamma constant in the paper
-        self.as_g = 0.5 # g constant in the paper
+        # self.as_gamma = 0.5 # gamma constant in the paper
+        # self.as_g = 0.5 # g constant in the paper
+        self.as_gamma = data['as_gamma']
+        self.as_g = data['as_g']
 
         # Moral behavior parameters
-        self.mb_z = 0.5 # constant z in the paper
-        self.mb_zeta = 0.5 # constant greek zeta in the paper
+        # self.mb_z = 0.5 # constant z in the paper
+        # self.mb_zeta = 0.5 # constant greek zeta in the paper
+        self.mb_z = data['mb_z']
+        self.mb_zeta = data['mb_zeta']
 
         # Political view parameters
-        self.pv_x = 0.5 # constant x in the paper
-        self.pv_omega = 0.5 # constant omega in the paper
+        # self.pv_x = 0.5 # constant x in the paper
+        # self.pv_omega = 0.5 # constant omega in the paper
+        self.pv_x = data['pv_x']
+        self.pv_omega = data['pv_omega']
 
         #################
         ### Vars Init ###

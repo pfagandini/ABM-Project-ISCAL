@@ -4,17 +4,17 @@ import mesa
 
 class model(mesa.Model):
 
-    def __init__(self, N):
+    def __init__(self, data):
 
-        super().__init__(self, N)
+        super().__init__(self, data)
 
-        self.interest_rate = 0.02 # r in the paper
+        self.interest_rate = data['interest_rate'] # r in the paper
 
         self.tax = 0
         self.av_pol_view = 0
         self.av_wealth = 0
 
-        self.num_agents = N
+        self.num_agents = data['agents']
         self.schedule = mesa.time.RandomActivation(self)
 
         self.first_step = True
@@ -43,8 +43,8 @@ class model(mesa.Model):
         gen_skills = []
         wealth = []
 
-        for i in range(self.num_agents):
-            a = agent(i, self)
+        for i in range(int(self.num_agents)):
+            a = agent(i, data, self)
             gen_skills.append(a.gen_skills)
             wealth.append(a.wealth)
             self.schedule.add(a)
