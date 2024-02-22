@@ -8,6 +8,8 @@ class model(mesa.Model):
 
         super().__init__(self, data)
 
+        self.data = data
+
         self.interest_rate = data['interest_rate'] # r in the paper
 
         self.tax = 0
