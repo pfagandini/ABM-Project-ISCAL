@@ -100,8 +100,8 @@ class agent(mesa.Agent):
         return aux_agents[0 : min(int(self.connectivity), self.max_connectivity)]
     
     def propensity_to_consume(self):
-        c_l = self.pc_cl # paper's c_l
-        c_h = self.pc_ch # paper's c_h
+        c_l = self.pc_c_l # paper's c_l
+        c_h = self.pc_c_h # paper's c_h
 
         a = self.pc_a # a in the paper
 
