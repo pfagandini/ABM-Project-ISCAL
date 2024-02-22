@@ -32,6 +32,27 @@ class agent(mesa.Agent):
         self.min_connectivity = 2 # This is the N^0 of the paper
         self.max_connectivity = self.model.num_agents - 1 # This is the \tilde{N} of the paper.
 
+        # Propensity to consume parameters
+        self.pc_a = 0.5 # a in the paper
+        self.pc_c_l = 0.1 # paper's c_l
+        self.pc_c_h = 0.9 # paper's c_h
+
+        # Connectivity update parameters
+        self.connect_w = 0.5 # w in the paper
+        self.connect_b = 0.5 # w in the paper
+
+        # Animal spirits parameters
+        self.as_gamma = 0.5 # gamma constant in the paper
+        self.as_g = 0.5 # g constant in the paper
+
+        # Moral behavior parameters
+        self.mb_z = 0.5 # constant z in the paper
+        self.mb_zeta = 0.5 # constant greek zeta in the paper
+
+        # Political view parameters
+        self.pv_x = 0.5 # constant x in the paper
+        self.pv_omega = 0.5 # constant omega in the paper
+
         #################
         ### Vars Init ###
         #################
@@ -79,16 +100,16 @@ class agent(mesa.Agent):
         return aux_agents[0 : min(int(self.connectivity), self.max_connectivity)]
     
     def propensity_to_consume(self):
-        c_l = 0.1 # paper's c_l
-        c_h = 0.9 # paper's c_h
+        c_l = self.pc_cl # paper's c_l
+        c_h = self.pc_ch # paper's c_h
 
-        a = 0.5 # a in the paper
+        a = self.pc_a # a in the paper
 
         return 0.5*((c_h + c_l)+(c_h - c_l)*(np.arctan(a/2*self.animal_spirits))/(np.arctan(a/2)))
 
     def update_connectivity(self):
-        w = 0.5 # w in the paper
-        b = 0.5 # b in the paper
+        w = self.connect_w # w in the paper
+        b = self.connect_b # b in the paper
 
         self.connectivity = self.connectivity + np.round((w * (self.wealth - self.past_wealth) + b * self.moral_behavior ) * self.connectivity)
         if self.connectivity > self.model.num_agents:
@@ -103,7 +124,7 @@ class agent(mesa.Agent):
     def update_animal_spirits(self, friends):
 
         def gamma(x):
-            ga = 0.5 # gamma constant in the paper
+            ga = self.as_gamma # gamma constant in the paper
             if x < 0:
                 return -ga * (1+x)
             elif x == 0 :
@@ -111,7 +132,7 @@ class agent(mesa.Agent):
             else:
                 return ga * (1-x)
         
-        g = 0.5 # g constant in the paper
+        g = self.as_g # g constant in the paper
 
         Am_temp = []
 
@@ -124,10 +145,10 @@ class agent(mesa.Agent):
 
     def update_moral_behavior(self, friends):
 
-        z = 0.5 # constant z in the paper
+        z = self.mb_z
         
         def zeta(x):
-            zet = 0.5 # constant greez zeta in the paper
+            zet = self.mb_zeta # constant greek zeta in the paper
 
             if x < 0 :
                 return -zet * (1+x)
@@ -142,10 +163,10 @@ class agent(mesa.Agent):
 
     def update_political_view(self, friends):
 
-        x = 0.5 # constant x in the paper
+        x = self.pv_x # constant x in the paper
 
         def omega(x):
-            ome = 0.5
+            ome = self.pv_omega # constant omega in the paper
             if x == 0:
                 return 0
             if x < 0:
