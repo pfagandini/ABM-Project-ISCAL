@@ -26,7 +26,7 @@ class agent(mesa.Agent):
         # Qualities and varieties parameters
         # self.qualities = 10 # Q in the paper
         # varieties = 10 # J in the paper
-        self.qualities = model.data['self.qualities'] # Q in the paper
+        self.qualities = model.data['qualities'] # Q in the paper
         varieties = model.data['varieties'] # J in the paper
 
         # Own good pricing parameters
