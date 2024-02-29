@@ -43,21 +43,25 @@ class model(mesa.Model):
 ############ DATA COLLECTOR ##################
 
         gen_skills = []
-        wealth = []
+        wealths = []
 
         for i in range(int(self.num_agents)):
             a = agent(i, self)
             gen_skills.append(a.gen_skills)
-            wealth.append(a.wealth)
+            wealths.append(a.wealth)
             self.schedule.add(a)
 
         max_g_skills = max(gen_skills)
 
-        wealth = list(sorted(wealth))
+        #wealths.sort()
+        wealths = sorted(wealths)
 
         for a in self.schedule.agents:
             a.gen_skills = np.round(a.gen_skills / max_g_skills * (a.qualities - 1) + 1)
-            a.connectivity = len(wealth) - wealth.index(a.wealth) + a.min_connectivity
+            a.connectivity = min(
+                                wealths.index(a.wealth) + a.min_connectivity,
+                                a.max_connectivity
+                             )
 
     def step(self):
 
