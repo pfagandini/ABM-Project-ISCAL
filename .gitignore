@@ -1,3 +1,5 @@
-/virtenv
-/__pycache__
+virtenv/
+__pycache__/
+Plots/
+Results/
 *.csv
