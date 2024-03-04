@@ -62,7 +62,7 @@ class model(mesa.Model):
                                 wealths.index(a.wealth) + a.min_connectivity,
                                 a.max_connectivity
                              )
-
+            
     def step(self):
 
         ## get initial data ##
