@@ -36,7 +36,8 @@ class model(mesa.Model):
                 "political_view" : "political_view",
                 "consumption" : "consumed",
                 "past_wealth" : "past_wealth",
-                "gen_skills" : "gen_skills"
+                "gen_skills" : "gen_skills",
+                "revenue" : 'revenue'
             }
         )
 

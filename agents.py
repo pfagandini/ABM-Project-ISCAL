@@ -118,9 +118,6 @@ class agent(mesa.Agent):
         elif self.connectivity < 1:
             self.connectivity = self.min_connectivity
 
-        if np.isnan(self.connectivity):
-            self.connectivity = self.min_connectivity
-
     def update_animal_spirits(self, friends):
 
         def gamma(x):
@@ -183,7 +180,7 @@ class agent(mesa.Agent):
 
         self.political_view = self.political_view + x*(Xm-self.political_view) + omega(self.political_view)
 
-        return 0
+        #return 0
 
     def update_wealth(self):  
         new_wealth = self.revenue + self.wealth * (1 + self.model.interest_rate) - self.consumed
