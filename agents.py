@@ -105,7 +105,7 @@ class agent(mesa.Agent):
 
         a = self.pc_a # a in the paper
 
-        return 0.5*((c_h + c_l)+(c_h - c_l)*(np.arctan(a/2*self.animal_spirits))/(np.arctan(a/2)))
+        return 0.5 * ((c_h + c_l) + (c_h - c_l) * (np.arctan(a / 2 * self.animal_spirits)) / (np.arctan(a / 2)))
 
     def update_connectivity(self):
         w = self.connect_w # w in the paper

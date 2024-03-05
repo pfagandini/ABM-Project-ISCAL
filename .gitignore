@@ -3,3 +3,4 @@ __pycache__/
 Plots/
 Results/
 *.csv
+paper/
