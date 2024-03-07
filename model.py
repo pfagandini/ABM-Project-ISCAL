@@ -58,13 +58,24 @@ class model(mesa.Model):
         #wealths.sort()
         wealths = sorted(wealths)
 
+        def gen_connect(w, ws, min, max):
+            from scipy.stats import percentileofscore
+
+            ps = percentileofscore(ws, w, kind = 'weak')
+
+            bins = range(max - min)
+            return min + int(len(bins)*ps/100)
+
+
         for a in self.schedule.agents:
             a.gen_skills = np.round(a.gen_skills / max_g_skills * (a.qualities - 1) + 1)
-            a.connectivity = min(
-                                wealths.index(a.wealth) + a.min_connectivity,
-                                a.max_connectivity
-                             )
-            
+            a.connectivity = gen_connect(a.wealth, wealths, a.min_connectivity, a.max_connectivity)
+            # a.connectivity = min(
+            #                     wealths.index(a.wealth) + a.min_connectivity,
+            #                     a.max_connectivity
+            #                  )
+
+
     def step(self):
 
         ## get initial data ##
