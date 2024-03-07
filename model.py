@@ -55,7 +55,6 @@ class model(mesa.Model):
 
         max_g_skills = max(gen_skills)
 
-        #wealths.sort()
         wealths = sorted(wealths)
 
         def gen_connect(w, ws, min, max):
@@ -70,11 +69,6 @@ class model(mesa.Model):
         for a in self.schedule.agents:
             a.gen_skills = np.round(a.gen_skills / max_g_skills * (a.qualities - 1) + 1)
             a.connectivity = gen_connect(a.wealth, wealths, a.min_connectivity, a.max_connectivity)
-            # a.connectivity = min(
-            #                     wealths.index(a.wealth) + a.min_connectivity,
-            #                     a.max_connectivity
-            #                  )
-
 
     def step(self):
 

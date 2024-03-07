@@ -108,16 +108,9 @@ class agent(mesa.Agent):
         return 0.5 * ((c_h + c_l) + (c_h - c_l) * (np.arctan(a / 2 * self.animal_spirits)) / (np.arctan(a / 2)))
 
     def update_connectivity(self):
-        w = self.connect_w # w in the paper
-        b = self.connect_b # b in the paper
 
-        self.connectivity = self.connectivity + np.round((w * (self.wealth - self.past_wealth) + b * self.moral_behavior ) * self.connectivity)
-        
-        if self.connectivity > self.model.num_agents:
-            self.connectivity = self.max_connectivity
-
-        elif self.connectivity < 1:
-            self.connectivity = self.min_connectivity
+        self.connectivity += np.round((self.connect_w * (self.wealth - self.past_wealth) + self.connect_b * self.moral_behavior ) * self.connectivity)
+        self.connectivity = max(min(self.connectivity, self.max_connectivity), self.min_connectivity)
 
     def update_animal_spirits(self, friends):
 
