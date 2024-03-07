@@ -21,7 +21,7 @@ class model(mesa.Model):
 
         self.first_step = True
 
-############ DATA COLLECTOR ##################
+############ BEGIN DATA COLLECTOR ##################
 
         self.datacollector = mesa.DataCollector(
             model_reporters = {
@@ -35,13 +35,14 @@ class model(mesa.Model):
                 "animal_spirits" : "animal_spirits",
                 "political_view" : "political_view",
                 "consumption" : "consumed",
+                "max_consumption" : "max_consumption",
                 "past_wealth" : "past_wealth",
                 "gen_skills" : "gen_skills",
                 "revenue" : 'revenue'
             }
         )
 
-############ DATA COLLECTOR ##################
+############ END DATA COLLECTOR ##################
 
         gen_skills = []
         wealths = []
@@ -75,6 +76,11 @@ class model(mesa.Model):
         ### Now agents move! ###
         ########################
         
+        # reset intra period variables for all
+        for a in self.schedule.agents:
+            a.revenue = 0
+            a.consumed = 0
+
         self.schedule.step()
 
         ########################
@@ -84,8 +90,6 @@ class model(mesa.Model):
 
         for a in self.schedule.agents:
             a.update_wealth()
-
-        for a in self.schedule.agents:
             a.update_connectivity()
 
         # Get average wealth and political views

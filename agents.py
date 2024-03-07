@@ -180,8 +180,6 @@ class agent(mesa.Agent):
 
         self.political_view = self.political_view + x*(Xm-self.political_view) + omega(self.political_view)
 
-        #return 0
-
     def update_wealth(self):  
         new_wealth = self.revenue + self.wealth * (1 + self.model.interest_rate) - self.consumed
         self.past_wealth = self.wealth
@@ -198,8 +196,6 @@ class agent(mesa.Agent):
         self.my_friends.sort(key = lambda x: x.connectivity, reverse = True)
 
         self.max_consumption = self.propensity_to_consume() * self.wealth
-        self.consumed = 0
-        self.revenue = 0
 
         for a in self.my_friends:
             if (self.max_consumption - self.consumed > a.price) and (a.sp_skills >= self.pref_low) and (a.sp_skills <= self.pref_high):
